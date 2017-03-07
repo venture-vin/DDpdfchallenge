@@ -1,15 +1,15 @@
 // var $ = document.querySelector.bind(document);
-var leafletLayerImages = $('.leaflet-layer').childNodes[1]
 
-// new DroneDeploy({ version: 1 })
-//   .then(function(dronedeployApi) {
-//     });
-//   });
+var button = $("#button")
 
-    var button = $("#button")
-    button.addEventListener("click", function(){
-      console.log("clicked!")
-      genPDF()
+new DroneDeploy({ version: 1 })
+  .then(function(api) {
+    // console.log('DroneDeploy Api: ', api);
+    button.on("click", function(event){
+      console.log("clicked!", event)
+    genPDF()
+  });
+});
 
 function genPDF() {
   html2canvas(leafletLayerImages, {
@@ -20,11 +20,7 @@ function genPDF() {
       doc.save('test.pdf')
     }
   })
-}
-
-
-  // const zoom = 16;
-  // const layerName = 'ortho';
+};
 
   // function dronedeployApiReady(){
   //   return new Promise((resolve) => {
@@ -38,6 +34,17 @@ function genPDF() {
   //   return new Promise((resolve) => {
   //     window.dronedeploy.Plans.getCurrentlyViewed()
   //     .subscribe((plan) => resolve(plan.id));
+  //   });
+  // }
+
+  // const zoom = 16;
+  // const layerName = 'ortho';
+
+  // function dronedeployApiReady(){
+  //   return new Promise((resolve) => {
+  //     window.dronedeploy.onload(() => {
+  //       resolve();
+  //     });
   //   });
   // }
   // // function getTiles(planId, layerName, zoom){

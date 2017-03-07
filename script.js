@@ -7,20 +7,20 @@ new DroneDeploy({ version: 1 })
     // console.log('DroneDeploy Api: ', api);
     button.on("click", function(event){
       console.log("clicked!", event)
-    genPDF()
+    // genPDF()
   });
 });
 
-function genPDF() {
-  html2canvas(leafletLayerImages, {
-    onrendered: function(canvas) {
-      var img = canvas.toDataURL("img/png");
-      var doc = new jsPDF();
-      doc.addImage(img, 'JPEG', 20, 20);
-      doc.save('test.pdf')
-    }
-  })
-};
+// function genPDF() {
+//   html2canvas(leafletLayerImages, {
+//     onrendered: function(canvas) {
+//       var img = canvas.toDataURL("img/png");
+//       var doc = new jsPDF();
+//       doc.addImage(img, 'JPEG', 20, 20);
+//       doc.save('test.pdf')
+//     }
+//   })
+// };
 
   // function dronedeployApiReady(){
   //   return new Promise((resolve) => {

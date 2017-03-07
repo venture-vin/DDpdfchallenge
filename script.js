@@ -1,68 +1,56 @@
 // var $ = document.querySelector.bind(document);
 
 var button = $("#button")
+const zoom = 16;
+const layerName = 'ortho';
+const API = new DroneDeploy({version: 1});
 
-new DroneDeploy({ version: 1 })
-  .then(function(api) {
-    // console.log('DroneDeploy Api: ', api);
-    button.on("click", function(event){
-      console.log("clicked!", event)
-    // genPDF()
-  });
+
+function genPDF() {
+  API
+  .then(api => getCurrentPlanId(api)
+  .then(plan => getTiles(api, plan)
+  .then(tile => getAnnotations(api, plan)
+  .then(annotations => sendTileInfo(plan.geometry, tile, annotations)
+  .then(response => handleResponse(response)
+  .then(responseBlob => handleBlob(responseBlob)
+  .then(reader => downloadPDF(reader))))))));
+}
+
+function getCurrentPlanId(API){
+  return window.dronedeploy.Plans.getCurrentlyViewed();
+  console.log(plan);
+}
+
+function getTiles(plan){
+  tileInformation = window.dronedeploy.Tiles.get({planId: plan.id, layerName: layerName, zoom: zoom}
+  console.log(tileInformation);
+  return tileInformation
+}
+
+
+button.on("click", function(event){
+  console.log("clicked!", event)
+// genPDF()
 });
 
-// function genPDF() {
-//   html2canvas(leafletLayerImages, {
-//     onrendered: function(canvas) {
-//       var img = canvas.toDataURL("img/png");
-//       var doc = new jsPDF();
-//       doc.addImage(img, 'JPEG', 20, 20);
-//       doc.save('test.pdf')
-//     }
-//   })
-// };
+function sendTileInfo(){
+  $.post("")
+}
 
-  // function dronedeployApiReady(){
-  //   return new Promise((resolve) => {
-  //     window.dronedeploy.onload(() => {
-  //       resolve();
-  //     });
-  //   });
-  // }
+// Got sources from https://developer.mozilla.org/en-US/docs/Web/API/FileReader
 
-  // function getCurrentPlanId(){
-  //   return new Promise((resolve) => {
-  //     window.dronedeploy.Plans.getCurrentlyViewed()
-  //     .subscribe((plan) => resolve(plan.id));
-  //   });
-  // }
+function readBlob(blob){
+  return new Promise ((resolve) => {
+    var reader = new FileReader();
+    reader.onload = () => resolve(reader);
+    reader.readAsBinaryString(blob);
+  })
+}
 
-  // const zoom = 16;
-  // const layerName = 'ortho';
+function downloadPDF() {
+  var doc = new jsPDF();
+  doc.addImage(img, 'JPEG', 20, 20);
+  doc.save('MAP.pdf')
+};
 
-  // function dronedeployApiReady(){
-  //   return new Promise((resolve) => {
-  //     window.dronedeploy.onload(() => {
-  //       resolve();
-  //     });
-  //   });
-  // }
-  // // function getTiles(planId, layerName, zoom){
-  // //   return new Promise((resolve) => {
-  // //     window.dronedeploy.Tiles.get({planId, layerName, zoom})
-  // //     .subscribe((tilesRes) => resolve(tilesRes.tiles));
-  // //   });
-  // // }
-
-  // function getTiles(planId, layerName, zoom){
-  //   return new Promise((resolve) => {
-  //     window.dronedeployApi.Tiles.get({planId, layerName, zoom})
-  //     .then(function(tileInformation) {console.log(tileInformation)});
-  //   });
-  // }
-
-
-
-
-
-// });

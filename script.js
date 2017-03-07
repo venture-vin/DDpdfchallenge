@@ -1,25 +1,26 @@
-
-var $ = document.querySelector.bind(document);
+// var $ = document.querySelector.bind(document);
 var leafletLayerImages = $('.leaflet-layer').childNodes[1]
-var button = $("button")
 
-new DroneDeploy({ version: 1 })
-  .then(function(dronedeployApi) {
+// new DroneDeploy({ version: 1 })
+//   .then(function(dronedeployApi) {
+//     });
+//   });
+
+    var button = $("#button")
     button.addEventListener("click", function(){
+      console.log("clicked!")
       genPDF()
-    });
 
-
-  function genPDF() {
-    html2canvas(leafletLayerImages, {
-      onrendered: function(canvas) {
-        var img = canvas.toDataURL("img/png");
-        var doc = new jsPDF();
-        doc.addImage(img, 'JPEG', 20, 20);
-        doc.save('test.pdf')
-      }
-    })
-  }
+function genPDF() {
+  html2canvas(leafletLayerImages, {
+    onrendered: function(canvas) {
+      var img = canvas.toDataURL("img/png");
+      var doc = new jsPDF();
+      doc.addImage(img, 'JPEG', 20, 20);
+      doc.save('test.pdf')
+    }
+  })
+}
 
 
   // const zoom = 16;

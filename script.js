@@ -17,12 +17,14 @@ function getAnnotations(api, plan){
 }
 
 function sendRecTileInfo(geo, tileData, zoom, annotations){
-  var body = {
-    tiles: tileData.tiles,
-    planGeometry: geo,
-    zoomLvl: zoom,
-    annotations: annotations,
-  };
+    var body = {
+        tiles: tileData.tiles,
+        planGeometry: geo,
+        zoomLvl: zoom,
+        annotations: annotations,
+};
+
+// solution for the Blob parsing taken from here: http://stackoverflow.com/questions/21729451/pdf-blob-pop-up-window-not-showing-content
 
 $.ajax({
     type: 'POST',

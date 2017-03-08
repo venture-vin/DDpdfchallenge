@@ -2,13 +2,25 @@ var button = $("#button");
 const zoom = 16;
 const layerName = 'ortho';
 const API = new DroneDeploy({version: 1});
+var ddApi = null
 
 
-
+function getCurrentPlanId() {
   API
   .then(function(ddApi){
-    return getCurrentPlanId(ddApi)
-  }
+    return ddApi.Plans.getCurrentlyViewed();
+    console.log(ddApi.Plans.getCurrentlyViewed())
+      .then(function(plan))
+  });
+}
+
+button.on("click", function(event){
+  console.log("clicked!", event);
+  getCurrentPlanId()
+});
+
+
+
     // .then(plan => api.Tiles.get({planId: plan.id,layerName: layerName, zoom: zoom})
   // .then(tile => getAnnotations(api, planId)
   // .then(annotations => sendTileInfo(plan.geometry, tileData, annotations)
@@ -17,26 +29,22 @@ const API = new DroneDeploy({version: 1});
   // .then(reader => downloadPDF(reader))))))));
 
 
-// function getCurrentPlanId(api){
-//   return api.Plans.getCurrentlyViewed();
-//   console.log(api.Plans.getCurrentlyViewed());
+// function getCurrentPlanId(ddApi){
+//   return ddApi.Plans.getCurrentlyViewed();
+//   console.log(ddApi.Plans.getCurrentlyViewed());
 // }
 
-// function getTiles(api, plan){
-//   tileInformation = api.Tiles.get({planId: plan.id, layerName: layerName, zoom: zoom};
-//   console.log(tileInformation);
-//   return tileInformation
-// }
+function getTiles(planId, layerName, zoom){
+  tileInformation = api.Tiles.get({planId: plan.id, layerName: layerName, zoom: zoom};
+  console.log(tileInformation);
+  return tileInformation
+}
 
 // function getAnnotations(api, planId){
 //   api.Annotations.get(planId.id)
 //    .then(function(annotations){ console.log(annotations) })
 // }
 
-// button.on("click", function(event){
-//   console.log("clicked!", event)
-// // downloadPDF()
-// });
 
 // function sendTileInfo(geo, tileData, annotations){
 //   var body = {

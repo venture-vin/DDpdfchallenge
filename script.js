@@ -7,7 +7,7 @@ const layerName = 'ortho';
 
 function dronedeployApiReady(){
   return new Promise((resolve) => {
-    window.dronedeploy.onload(() => {
+    dronedeploy.onload(() => {
       resolve();
     });
   });
@@ -74,14 +74,13 @@ function downloadPDF(reader) {
 
 function genPDF(){
   dronedeployApiReady()
-  .then(getCurrentPlanId)
-  .then(planId => getTiles(planId, layerName, zoom))
-  .then(planId => getAnnotations(planId))
-  .then(annotations => sendTileInfo(plan.geometry, tile, zoom, annotations))
-  .then(response => handleResponse(response))
-  .then(reader => downloadPDF)
+    .then(getCurrentPlanId)
+    .then(planId => getTiles(planId, layerName, zoom))
+    .then(planId => getAnnotations(planId))
+    .then(annotations => sendTileInfo(plan.geometry, tile, zoom, annotations))
+    .then(response => handleResponse(response))
+    .then(reader => downloadPDF)
 }
-
 
 button.on("click", function(event){
   console.log("clicked!", event);

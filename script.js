@@ -1,36 +1,33 @@
 var button = $("#button");
-var api = new DroneDeploy({version: 1});
-const zoom = 16;
-const layerName = 'ortho';
+const API = new DroneDeploy({version: 1});
+const zoomVal = 16;
+const layer = 'ortho';
 
 // HELPER FUNCTIONS TO HELP GET ALL OF THE DATA TO FEED TO EVENT LISTENER
 
-function dronedeployApiReady(){
-  return new Promise((resolve) => {
-    dronedeploy.onload(() => {
-      resolve();
-    });
-  });
-}
+// function dronedeployApiReady(){
+//   return new Promise((resolve) => {
+//     dronedeploy.onload(() => {
+//       resolve();
+//     });
+//   });
+// }
 
-function getCurrentPlanId(){
-  return new Promise((resolve) => {
-    window.dronedeploy.Plans.getCurrentlyViewed()
-      .subscribe((plan) => resolve(plan.id));
-  });
-}
+// function getCurrentPlanId(){
+//   return new Promise((resolve) => {
+//     window.dronedeploy.Plans.getCurrentlyViewed()
+//       .subscribe((plan) => resolve(plan.id));
+//   });
+// }
 
-function getTiles(planId, layerName, zoom){
-  return new Promise((resolve) => {
-    window.dronedeploy.Tiles.get({planId, layerName, zoom})
-      .subscribe((tilesRes) => resolve(tilesRes.tiles));
-  });
+function getTiles(planId, api){
+  return api.Tiles.get({planId: planId.id, layerName: layer, zoom: zoomVal});
 }
 
 function getAnnotations(planId){
-  return new Promise((resolve) => {
+
     window.dronedeploy.Annotations.get({planId})
-  });
+
 }
 
 function sendTileInfo(geo, tileData, zoom, annotations){
@@ -73,8 +70,13 @@ function downloadPDF(reader) {
 // FUNCTION TO ENCAPSULATE ALL HELPER FUNCTIONS ABOVE
 
 function genPDF(){
-  dronedeployApiReady()
-    .then(getCurrentPlanId)
+
+  API.then(function(dronedeployApi){
+        return dronedeployApi.Plans.getCurrentlyViewed()
+        .then(function(plan){
+          return fetchTileDataFromPlan(dronedeployApi, plan);
+       });
+    })
     .then(planId => getTiles(planId, layerName, zoom))
     .then(planId => getAnnotations(planId))
     .then(annotations => sendTileInfo(plan.geometry, tile, zoom, annotations))

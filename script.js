@@ -25,9 +25,7 @@ function getTiles(planId, api){
 }
 
 function getAnnotations(planId){
-
-    window.dronedeploy.Annotations.get({planId})
-
+    return api.Annotations.get({planId})
 }
 
 function sendTileInfo(geo, tileData, zoom, annotations){
@@ -74,10 +72,9 @@ function genPDF(){
   API.then(function(dronedeployApi){
         return dronedeployApi.Plans.getCurrentlyViewed()
         .then(function(plan){
-          return fetchTileDataFromPlan(dronedeployApi, plan);
+          return getTiles(dronedeployApi, plan);
        });
     })
-    .then(planId => getTiles(planId, layerName, zoom))
     .then(planId => getAnnotations(planId))
     .then(annotations => sendTileInfo(plan.geometry, tile, zoom, annotations))
     .then(response => handleResponse(response))

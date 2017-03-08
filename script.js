@@ -1,75 +1,95 @@
 var button = $("#button");
+var api = new DroneDeploy({version: 1});
 const zoom = 16;
 const layerName = 'ortho';
-const API = new DroneDeploy({version: 1});
-var ddApi = null
 
+// HELPER FUNCTIONS TO HELP GET ALL OF THE DATA TO FEED TO EVENT LISTENER
 
-function getCurrentPlanId() {
-  API
-  .then(function(ddApi){
-    return ddApi.Plans.getCurrentlyViewed();
-    console.log(ddApi.Plans.getCurrentlyViewed())
-      .then(function(plan))
+function dronedeployApiReady(){
+  return new Promise((resolve) => {
+    window.dronedeploy.onload(() => {
+      resolve();
+    });
   });
 }
 
-button.on("click", function(event){
-  console.log("clicked!", event);
-  getCurrentPlanId()
-});
-
-
-
-    // .then(plan => api.Tiles.get({planId: plan.id,layerName: layerName, zoom: zoom})
-  // .then(tile => getAnnotations(api, planId)
-  // .then(annotations => sendTileInfo(plan.geometry, tileData, annotations)
-  // .then(response => handleResponse(response)
-  // .then(responseBlob => handleBlob(responseBlob)
-  // .then(reader => downloadPDF(reader))))))));
-
-
-// function getCurrentPlanId(ddApi){
-//   return ddApi.Plans.getCurrentlyViewed();
-//   console.log(ddApi.Plans.getCurrentlyViewed());
-// }
-
-function getTiles(planId, layerName, zoom){
-  tileInformation = api.Tiles.get({planId: plan.id, layerName: layerName, zoom: zoom};
-  console.log(tileInformation);
-  return tileInformation
+function getCurrentPlanId(){
+  return new Promise((resolve) => {
+    window.dronedeploy.Plans.getCurrentlyViewed()
+      .subscribe((plan) => resolve(plan.id));
+  });
 }
 
-// function getAnnotations(api, planId){
-//   api.Annotations.get(planId.id)
-//    .then(function(annotations){ console.log(annotations) })
-// }
+function getTiles(planId, layerName, zoom){
+  return new Promise((resolve) => {
+    window.dronedeploy.Tiles.get({planId, layerName, zoom})
+      .subscribe((tilesRes) => resolve(tilesRes.tiles));
+  });
+}
+
+function getAnnotations(planId){
+  return new Promise((resolve) => {
+    window.dronedeploy.Annotations.get({planId})
+  });
+}
+
+function sendTileInfo(geo, tileData, zoom, annotations){
+  var body = {
+    tiles: tileData.tiles,
+    planGeometry: geo,
+    zoomLvl: zoom,
+    annotations: annotations
+  };
+
+  return $.get('https://powerful-escarpment-84106.herokuapp.com/', function(data){
+    console.log("Data: " + data);
+    body: JSON.stringify(body);
+  });
+
+}
+
+function handleResponse(res){
+  return res.blob();
+  console.log(res.blob);
+}
 
 
-// function sendTileInfo(geo, tileData, annotations){
-//   var body = {
-//     tiles: tileResponse.tiles
-//   }
-// }
+// Got sources from https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+function readBlob(blob){
+  return new Promise ((resolve) => {
+    var reader = new FileReader();
+    reader.onload = () => resolve(reader);
+    reader.readAsBinaryString(blob);
+  })
+}
 
-// $.get("https://powerful-escarpment-84106.herokuapp.com/tileUrl/", function(data){
-//   console.log("Data: "data);
-// })
-// // Got sources from https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+// Use jsPDF based on documentation here: http://rawgit.com/MrRio/jsPDF/master/docs/jsPDF.html
+function downloadPDF(reader) {
+  var doc = new jsPDF();
+  doc.addImage(img, 'JPEG', 20, 20);
+  doc.save('MAP.pdf')
+};
 
-// function readBlob(blob){
-//   return new Promise ((resolve) => {
-//     var reader = new FileReader();
-//     reader.onload = () => resolve(reader);
-//     reader.readAsBinaryString(blob);
-//   })
-// }
+// FUNCTION TO ENCAPSULATE ALL HELPER FUNCTIONS ABOVE
 
-// // Use jsPDF based on documentation here: http://rawgit.com/MrRio/jsPDF/master/docs/jsPDF.html
+function genPDF(){
+  dronedeployApiReady()
+  .then(getCurrentPlanId)
+  .then(planId => getTiles(planId, layerName, zoom))
+  .then(planId => getAnnotations(planId))
+  .then(annotations => sendTileInfo(plan.geometry, tile, zoom, annotations))
+  .then(response => handleResponse(response))
+  .then(reader => downloadPDF)
+}
 
-// function downloadPDF() {
-//   var doc = new jsPDF();
-//   doc.addImage(img, 'JPEG', 20, 20);
-//   doc.save('MAP.pdf')
-// };
+
+button.on("click", function(event){
+  console.log("clicked!", event);
+  genPDF()
+});
+
+genPDF();
+
+
+
 
